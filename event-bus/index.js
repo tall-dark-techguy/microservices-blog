@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 9000;
@@ -9,11 +10,19 @@ app.post("/events", async (req, res) => {
   try {
     const event = req.body;
 
-    // notify all services about event emitted
+    /*
+     * notify all services about event emitted
+     */
+    await axios.post("http://localhost:2000/events", event); // comments service
+    await axios.post("http://localhost:3000/events", event); // query service
+    await axios.post("http://localhost:1000/events", event); // posts service
 
-    res.send("OK");
+    console.log(`event emitted: ${event.eventType || "none"}`);
+
+    res.send({});
   } catch (error) {
-    res.status(500).send(error.message);
+    console.log(error.message);
+    res.send({});
   }
 });
 
